@@ -11,7 +11,17 @@ def plot3D(function, X, Y, color = 1):
 
     # Make data.
     X, Y = np.meshgrid(X, Y)
-    Z = np.array(list(map(function, X, Y)))
+    # print("!%%###",X.shape)
+    Z = []
+    for x_idx in range(X.shape[0]):
+            # print("!!!",x_line.shape, y_line.shape)
+            # print(len(x_line),len(y_line))
+            # print("@@@",np.array(list(map(function, x_line, y_line))))
+        next_line = list(map(lambda x, y: function(x,y)[1], X[x_idx,:], Y[x_idx,:]))
+        Z.append(next_line)
+    print(Z)
+    Z = np.array(Z)
+    print(Z.shape)
 
     # Plot the surface.
     color_list = [
@@ -25,7 +35,7 @@ def plot3D(function, X, Y, color = 1):
     ax.zaxis.set_major_locator(LinearLocator(10))
     ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 
-    ax.set_xlabel("Not Latency")
+    ax.set_xlabel("Net Latency")
     ax.set_ylabel("Net Bandwidth")
     ax.set_zlabel("Accuracy")
 
@@ -143,14 +153,16 @@ def plot_fig_8():
     # Display the plot in the matplotlib's viewer.
     plt.show()
 
-
+# def f(x,y):
+#     print("x and y: {} and {}".format(x,y))
+#     return (x**2 + y**2)/10000
 
 
 if __name__ == "__main__":
-    X = range(-100,100)
-    Y = range(-100, 100)
-    f = lambda x, y: (x**2 + y**2)/10000
-    plot3D(f, X, Y, 7)
+    X = range(2,100)
+    Y = range(2, 100)
+    # f = lambda x, y: (x**2 + y**2)
+    plot3D(decision, X, Y, 7)
     # plot_fig_8()
     # for x in range(1,1,5000):
     #     for
