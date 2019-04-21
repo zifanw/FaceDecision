@@ -20,7 +20,8 @@ ModelResource = np.random.rand(n_model,2) # GPU, CPU
 
 weight = 0.3
 resolution = 224*224
-resource_threshold = 300 # CPU + memory
+CPU_threshold = 300 # CPU + memory
+GPU_threshold = 300 # GPU
 
 def decision(bandwidth=100000.0, latency=1, sigma=0,n_face_interval=2, weight=0.03, energy=1, resource=1): 
     # print bandwidth,latency
@@ -42,8 +43,8 @@ def decision(bandwidth=100000.0, latency=1, sigma=0,n_face_interval=2, weight=0.
         utility = accuracy - total_latency
         # print 'Model %i |UTL: %f| ACC: %f|LTC: %f|PRO: %f|TRM: %f' %(i, utility, accuracy, total_latency, processing,transmission)
         if utility>max_utility:  
-            # if using local model: check constraints
-            if i!=0 and (ModelResource[i]>resource_threshold or processing>energy):
+            # if using local model: discard model not satisfying constraints
+            if i!=0 and (ModelResource[i][1]>GPU_threshold or ModelResource[i][0]>CPU_threshold or processing>energy):
                 continue
             
             model = i 
