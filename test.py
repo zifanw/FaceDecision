@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
+from communication.main import decision
 
 def plot3D(function, X, Y, color = 1):
     fig = plt.figure()
@@ -134,7 +135,7 @@ def plot_fig_8():
     plt.xlabel("times", fontsize=10)
 
     # Set y axes label.
-    plt.ylabel("Square of Number", fontsize=10)
+    plt.ylabel("network bandwidth", fontsize=10)
 
     # Set the x, y axis tick marks text size.
     plt.tick_params(axis='both', labelsize=9)
@@ -146,8 +147,10 @@ def plot_fig_8():
 
 
 if __name__ == "__main__":
-    # X = range(-100,100)
-    # Y = range(-100, 100)
-    # f = lambda x, y: (x**2 + y**2)/10000
-    # plot3D(f, X, Y, 7)
-    plot_fig_8()
+    X = range(-100,100)
+    Y = range(-100, 100)
+    f = lambda x, y: (x**2 + y**2)/10000
+    plot3D(f, X, Y, 7)
+    # plot_fig_8()
+    # for x in range(1,1,5000):
+    #     for

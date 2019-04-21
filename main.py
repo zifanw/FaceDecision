@@ -14,9 +14,9 @@ ModelProcessing = np.random.rand(n_model)
 
 ModelResource = np.random.rand(n_model)
 
-print 'accuracy: ', ModelAccuracy
-print 'latency: ', ModelProcessing
-print 'resource: ', ModelResource
+# print 'accuracy: ', ModelAccuracy
+# print 'latency: ', ModelProcessing
+# print 'resource: ', ModelResource
 
 weight = 0.3
 resolution = 224*224
