@@ -8,11 +8,11 @@ n_sigma = 3
 n_face_interval = 3
 
 # np.load('/tmp/123.npy')
-ModelAccuracy = np.random.rand(n_model, n_sigma, n_face_interval)
+ModelAccuracy = np.random.rand(n_model, n_face_interval, n_sigma)
 
 ModelProcessing = np.random.rand(n_model)
 
-ModelResource = np.random.rand(n_model)
+ModelResource = np.random.rand(n_model,2) # GPU, CPU
 
 # print 'accuracy: ', ModelAccuracy
 # print 'latency: ', ModelProcessing
