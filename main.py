@@ -26,23 +26,25 @@ GPU_threshold = 1024 # GPU
 bw = [50e6/8, 384000/8, 21400/8]
 n_model_all = 6
 n_remote = 4
-k = 0.1 # scale latency into same range as accuracy
-def decision(bandwidth=0, n_face_interval=0,weight=0.5,model_range=[0,n_model_all], cpu_limit = CPU_threshold, gpu_limit = GPU_threshold,energy_limit = 1): 
+k = 10 # scale latency into same range as accuracy
+def decision(bandwidth=0, n_face_interval=0,weight=0.5,model_range=[0,n_model_all], cpu_limit = CPU_threshold, gpu_limit = GPU_threshold,energy_limit = 1, speed = None):
     # print bandwidth,latency
     '''
     model, accuracy
     remote: model 0
     '''
-    max_utility = 0
+    max_utility = float("-inf")
     model_acc = 0
     model = None
     # model_ltc = 0
     for i in range(model_range[0],model_range[1]):
         sigma = bandwidth
         processing = ModelProcessing[i]
-        
-        speed = np.random.randn()*1000+float(bw[bandwidth]) 
-        
+        if not speed:
+            speed = np.random.randn()*300+float(bw[bandwidth])
+        # speed = float(bw[bandwidth])
+            speed = float(speed)
+
         transmission = resolution/speed if i>=n_remote else 0
         total_latency = k * (processing + transmission)
         if i<n_remote: # local model use sigma=0
@@ -51,16 +53,19 @@ def decision(bandwidth=0, n_face_interval=0,weight=0.5,model_range=[0,n_model_al
             accuracy = ModelAccuracy[i][sigma][n_face_interval]
         
         utility = (1-weight)*accuracy - weight * total_latency
+        # utility = accuracy - weight * total_latency
         print('Model %i |UTL: %f| ACC: %f|LTC: %f|PRO: %f|TRM: %f' %(i, utility, accuracy, total_latency, processing,transmission))
         if utility>max_utility:  
             # if using local model: discard model not satisfying constraints
             if i < n_remote and (ModelResource[i][1]>gpu_limit or ModelResource[i][0]>cpu_limit or processing>energy_limit):
+                print("!!!!!!!!!!!cpu gpu limits", ModelResource[i][0], ModelResource[i][1])
                 continue
             model = i 
             max_utility = utility
             model_acc = accuracy
     
     transmission = resolution/float(bw[bandwidth])  if i>=n_remote else 0
+    print("############",model)
     return model, model_acc, transmission+ModelProcessing[model]
 
 def fig1(bandwidth, n_face_interval):
@@ -94,7 +99,7 @@ def fig2(cpu, gpu):
     cpu and gpu are resource limits. Range needs referring data
     return MAP, latency
     '''
-    return decision(bandwidth=0,n_face_interval=0,model_range=[0,n_model_all],cpu_limit=cpu,gpu_limit=gpu)[1:]
+    return decision(bandwidth=2,n_face_interval=0,model_range=[0,n_model_all],cpu_limit=cpu,gpu_limit=gpu)[1:]
 
 def fig3(weight):
     '''
