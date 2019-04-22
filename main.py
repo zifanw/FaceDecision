@@ -3,27 +3,31 @@ import numpy as np
 # Accuracy: (m, c, i)
 # Processing: (m) 
 # Resource: (m) =CPU+memory (megabytes)
-n_model = 3
+n_model = 6
+n_remote = 4
 n_sigma = 3
-n_face_interval = 3
+n_face_interval = 4
 
 # np.load('/tmp/123.npy')
-ModelAccuracy = np.random.rand(n_model, n_face_interval, n_sigma)
+data = np.load('data.npz')
 
-ModelProcessing = np.random.rand(n_model)
+ModelAccuracy = data['mAP'] #np.random.rand(n_model, n_face_interval, n_sigma)
 
-ModelResource = np.random.rand(n_model,2) # GPU, CPU
+ModelProcessing = data['latency'] # np.random.rand(n_model)
+
+ModelResource = data['resource']# np.random.rand(n_model,2) # GPU, CPU
 
 # print 'accuracy: ', ModelAccuracy
 # print 'latency: ', ModelProcessing
 # print 'resource: ', ModelResource
 
 weight = 0.3
-resolution = 224*224
-CPU_threshold = 300 # CPU + memory
-GPU_threshold = 300 # GPU
-
-def decision(bandwidth=100000.0, latency=1, sigma=0,n_face_interval=2, weight=0.03, energy=1, resource=1): 
+resolution = 224*224*3*8
+CPU_threshold = 1024 # CPU + memory
+GPU_threshold = 1024 # GPU
+# 2G: 21.4kbps; 3G: 384kbps; 4G: 50Mbps
+bw = [21400/8,384000/8,50e6/8]
+def decision(bandwidth=2, latency=1, sigma=0,n_face_interval=0, weight=0.1, energy=1, resource=1): 
     # print bandwidth,latency
     '''
     model, accuracy
@@ -33,18 +37,23 @@ def decision(bandwidth=100000.0, latency=1, sigma=0,n_face_interval=2, weight=0.
     model_acc = 0
     model = -1
     for i in range(n_model):
+        sigma = bandwidth
         processing = ModelProcessing[i]
-        transmission = resolution/bandwidth if i==0 else 0
+        
+        speed = np.random.randn()*1000+float(bw[bandwidth]) 
+        print('sp;;',speed)
+        transmission = resolution/speed if i>=n_remote else 0
         total_latency = weight * (processing + transmission + latency)
-        if i!=0:
-            accuracy = ModelAccuracy[i][n_face_interval][sigma]
+        if i<n_remote: # local model use sigma=0
+            accuracy = ModelAccuracy[i][0][n_face_interval]
         else:
-            accuracy = max([ModelAccuracy[i][n_face_interval][s] for s in range(n_sigma)])
+            accuracy = ModelAccuracy[i][sigma][n_face_interval]
+        
         utility = accuracy - total_latency
-        # print 'Model %i |UTL: %f| ACC: %f|LTC: %f|PRO: %f|TRM: %f' %(i, utility, accuracy, total_latency, processing,transmission)
+        print('Model %i |UTL: %f| ACC: %f|LTC: %f|PRO: %f|TRM: %f' %(i, utility, accuracy, total_latency, processing,transmission))
         if utility>max_utility:  
             # if using local model: discard model not satisfying constraints
-            if i!=0 and (ModelResource[i][1]>GPU_threshold or ModelResource[i][0]>CPU_threshold or processing>energy):
+            if i < n_remote and (ModelResource[i][1]>GPU_threshold or ModelResource[i][0]>CPU_threshold or processing>energy):
                 continue
             
             model = i 
@@ -52,7 +61,7 @@ def decision(bandwidth=100000.0, latency=1, sigma=0,n_face_interval=2, weight=0.
             model_acc = accuracy
     return model, model_acc
 
-# print decision()
+print decision()
 
 # def acc_exp():
 #     latency = []
