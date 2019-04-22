@@ -57,16 +57,24 @@ def decision(bandwidth=0, n_face_interval=0,weight=0.5,model_range=[0,n_model_al
         print('Model %i |UTL: %f| ACC: %f|LTC: %f|PRO: %f|TRM: %f' %(i, utility, accuracy, total_latency, processing,transmission))
         if utility>max_utility:  
             # if using local model: discard model not satisfying constraints
+            print("!!!!!!!!!!!!!!!!!", cpu_limit, gpu_limit)
             if i < n_remote and (ModelResource[i][1]>gpu_limit or ModelResource[i][0]>cpu_limit or processing>energy_limit):
-                print("!!!!!!!!!!!cpu gpu limits", ModelResource[i][0], ModelResource[i][1])
+                # print("!!!!!!!!!!!cpu gpu limits", ModelResource[i][0], ModelResource[i][1])
+                print("trace")
                 continue
             model = i 
             max_utility = utility
             model_acc = accuracy
+        print("max_utility", max_utility)
     
     transmission = resolution/float(bw[bandwidth])  if i>=n_remote else 0
     print("############",model)
-    return model, model_acc, transmission+ModelProcessing[model]
+    if model == None:
+        model_acc = 0
+        latency = 0
+    else:
+        latency = transmission+ModelProcessing[model]
+    return model, model_acc, latency
 
 def fig1(bandwidth, n_face_interval):
     '''
@@ -99,7 +107,8 @@ def fig2(cpu, gpu):
     cpu and gpu are resource limits. Range needs referring data
     return MAP, latency
     '''
-    return decision(bandwidth=2,n_face_interval=0,model_range=[0,n_model_all],cpu_limit=cpu,gpu_limit=gpu)[1:]
+    print(cpu,gpu)
+    return decision(bandwidth=2,n_face_interval=0,model_range=[0,n_remote],cpu_limit=cpu,gpu_limit=gpu)[1:]
 
 def fig3(weight):
     '''
