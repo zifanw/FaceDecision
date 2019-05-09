@@ -1,8 +1,4 @@
-#FaceDecision: A Mobile QoS-based Deep Learning Framework for Face Detection
-
-CMU 2019 Spring 18-859 Group Project
-
-
+## FaceDecision: A Mobile QoS-based Deep Learning Framework for Face Detection
 
 ### Overview
 
