@@ -286,3 +286,4 @@ c = 3
 | MTCNN         |          6984 MiB          |       2074.180 MiB        |     5004 MiB     |
 | MobileNet_SSD |          390 MiB           |       1967.676 MiB        |   **502 MiB**    |
 | SFD           |            N/A             |        2293.76 MiB        |    13501 MiB     |
+
