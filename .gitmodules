@@ -1,0 +1,3 @@
+[submodule "face-detector-benchmark"]
+	path = face-detector-benchmark
+	url = https://github.com/nodefluxio/face-detector-benchmark.git
