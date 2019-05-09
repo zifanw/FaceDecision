@@ -1,3 +1,6 @@
 [submodule "face-detector-benchmark"]
 	path = face-detector-benchmark
 	url = https://github.com/nodefluxio/face-detector-benchmark.git
+[submodule "sfd.pytorch"]
+	path = sfd.pytorch
+	url = https://github.com/louis-she/sfd.pytorch.git
